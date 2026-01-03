@@ -22,6 +22,7 @@ an event-driven ride-hailing simulation built with java, spring boot, and kafka.
 ## setup & run
 build the jars:
 ```bash
+./mvnw clean package -DskipTests -f common/pom.xml
 ./mvnw clean package -DskipTests -f services/trips-service/pom.xml
 ./mvnw clean package -DskipTests -f services/pricing-service/pom.xml
 ./mvnw clean package -DskipTests -f services/analytics-service/pom.xml

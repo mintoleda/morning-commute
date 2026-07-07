@@ -1,7 +1,9 @@
 package pricing;
 
-import events.TripRequested;
+import events.TripCancelled;
 import events.TripCompleted;
+import events.TripRequested;
+
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,14 @@ public class PricingService {
     public void consumeTripCompleted(TripCompleted event) {
         // decrement active trips
         if ("TripCompleted".equals(event.getEventType())) {
+            zoneDemand.computeIfPresent(event.getPickupZone(), (k, v) -> Math.max(0, v - 1));
+        }
+    }
+
+    @KafkaHandler
+    public void consumeTripCancelled(TripCancelled event) {
+        // same as completed
+        if ("TripCancelled".equals(event.getEventType())) {
             zoneDemand.computeIfPresent(event.getPickupZone(), (k, v) -> Math.max(0, v - 1));
         }
     }

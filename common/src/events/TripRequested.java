@@ -18,9 +18,7 @@ public class TripRequested {
 
     private OffsetDateTime requestedAt;
 
-    public TripRequested() {
-
-    }
+    public TripRequested() {}
 
     public String getEventType() {
         return eventType;

@@ -2,8 +2,8 @@ package events;
 
 import java.time.OffsetDateTime;
 
-// event payload for completed trips
-public class TripCompleted {
+// event payload for cancelled trips
+public class TripCancelled {
     // event data
     private String eventType;
     private int eventVersion;
@@ -17,9 +17,9 @@ public class TripCompleted {
     private String dropoffZone;
 
     private OffsetDateTime requestedAt;
-    private OffsetDateTime completedAt;
+    private OffsetDateTime cancelledAt;
 
-    public TripCompleted() {}
+    public TripCancelled() {}
 
     public String getEventType() {
         return eventType;
@@ -77,11 +77,11 @@ public class TripCompleted {
         this.requestedAt = requestedAt;
     }
 
-    public OffsetDateTime getCompletedAt() {
-        return completedAt;
+    public OffsetDateTime getCancelledAt() {
+        return cancelledAt;
     }
 
-    public void setCompletedAt(OffsetDateTime completedAt) {
-        this.completedAt = completedAt;
+    public void setCancelledAt(OffsetDateTime cancelledAt) {
+        this.cancelledAt = cancelledAt;
     }
 }

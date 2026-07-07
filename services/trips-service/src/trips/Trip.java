@@ -1,13 +1,13 @@
 package trips;
 
-import java.time.OffsetDateTime;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Column;
+
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "trips")
@@ -16,11 +16,13 @@ public class Trip {
     @Id
     @Column(name = "trip_id")
     private String tripID;
+
     @Column(name = "rider_id")
     private String riderID;
 
     @Column(name = "pickup_zone")
     private String pickupZone;
+
     @Column(name = "dropoff_zone")
     private String dropoffZone;
 
@@ -29,11 +31,14 @@ public class Trip {
 
     @Column(name = "requested_at")
     private OffsetDateTime requestedAt;
+
     @Column(name = "completed_at")
     private OffsetDateTime completedAt;
 
-    public Trip() {
-    }
+    @Column(name = "cancelled_at")
+    private OffsetDateTime cancelledAt;
+
+    public Trip() {}
 
     public String getTripID() {
         return tripID;
@@ -91,8 +96,17 @@ public class Trip {
         this.completedAt = completedAt;
     }
 
+    public OffsetDateTime getCancelledAt() {
+        return cancelledAt;
+    }
+
+    public void setCancelledAt(OffsetDateTime cancelledAt) {
+        this.cancelledAt = cancelledAt;
+    }
+
     public enum Status {
         REQUESTED,
-        COMPLETE
+        COMPLETE,
+        CANCELLED
     };
 }

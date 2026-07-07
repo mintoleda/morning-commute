@@ -1,11 +1,14 @@
 package trips;
 
-import events.TripRequested;
+import events.TripCancelled;
 import events.TripCompleted;
+import events.TripRequested;
+
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import java.util.UUID;
+
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TripService {
@@ -41,8 +44,14 @@ public class TripService {
     }
 
     public void completeTrip(String tripId) {
-        Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new TripNotFoundException("Trip with id " + tripId + " not found"));
-        if (trip.getStatus() == Trip.Status.COMPLETE) {
+        Trip trip =
+                tripRepository
+                        .findById(tripId)
+                        .orElseThrow(
+                                () ->
+                                        new TripNotFoundException(
+                                                "Trip with id " + tripId + " not found"));
+        if (trip.getStatus() != Trip.Status.REQUESTED) {
             return;
         }
 
@@ -63,11 +72,47 @@ public class TripService {
         kafkaTemplate.send("trips.events", trip.getTripID(), event);
     }
 
+    public void cancelTrip(String tripId) {
+        Trip trip =
+                tripRepository
+                        .findById(tripId)
+                        .orElseThrow(
+                                () ->
+                                        new TripNotFoundException(
+                                                "Trip with id " + tripId + " not found"));
+        if (trip.getStatus() != Trip.Status.REQUESTED) {
+            return;
+        }
+
+        trip.setStatus(Trip.Status.CANCELLED);
+        trip.setCancelledAt(java.time.OffsetDateTime.now());
+        tripRepository.save(trip);
+
+        TripCancelled event = new TripCancelled();
+        event.setEventType("TripCancelled");
+        event.setEventVersion(1);
+        event.setTripID(trip.getTripID());
+        event.setRiderID(trip.getRiderID());
+        event.setPickupZone(trip.getPickupZone());
+        event.setDropoffZone(trip.getDropoffZone());
+        event.setRequestedAt(trip.getRequestedAt());
+        event.setCancelledAt(trip.getCancelledAt());
+
+        kafkaTemplate.send("trips.events", trip.getTripID(), event);
+    }
+
+    public List<Trip> getAllTrips() {
+        return tripRepository.findAll();
+    }
+
     public List<Trip> getTripsByRider(String riderId) {
         return tripRepository.findByRiderID(riderId);
     }
 
     public Trip getTrip(String tripId) {
-        return tripRepository.findById(tripId).orElseThrow(() -> new TripNotFoundException("Trip with id " + tripId + " not found"));
+        return tripRepository
+                .findById(tripId)
+                .orElseThrow(
+                        () -> new TripNotFoundException("Trip with id " + tripId + " not found"));
     }
 }
